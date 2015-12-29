@@ -92,7 +92,7 @@ module Bitbond
     end
 
     def url(endpoint)
-      "#{self.base_url}/api/v1/#{endpoint}"
+      "#{self.base_url}/api/#{endpoint}"
     end
 
 
