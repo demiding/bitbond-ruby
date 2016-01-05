@@ -10,62 +10,6 @@ describe Bitbond::Client do
     expect(client).to be
   end
 
-  describe "Listings" do
-    it "gets listings" do
-      url = api_url('listings') + "?page=0"
-      stub_request(:get, url)
-        .to_return(mock_json_collection)
-
-      expect(client.listings).to eq mock_collection
-
-      expect(a_request(:get, url)).to have_been_made
-    end
-
-    it 'can search listings' do
-      stub_request(:get, "#{base_url}/listings?base_currency%5B%5D=usd&page=0&rating%5B%5D=A")
-        .to_return(mock_json_collection)
-
-      client.listings(base_currency: ['usd'], rating: ['A'])
-    end
-
-    it 'can search for term and accepts page arguments' do
-      stub_request(:get, "#{base_url}/listings?base_currency%5B%5D=btc&base_currency%5B%5D=usd&page=2&term%5B%5D=term_6_weeks")
-        .to_return(mock_json_collection)
-
-      client.listings(base_currency: ['usd', 'btc'], page: 2, term: ['term_6_weeks'])
-    end
-
-
-    it "will show listing details" do
-      url = api_url('listings/LISTING_ID')
-      stub_request(:get, url)
-        .to_return(mock_json_item)
-
-      expect(client.listing(listing_id: 'LISTING_ID')).to eq mock_item
-      expect(a_request(:get, url)).to have_been_made
-    end
-
-    it 'can bid on a listing' do
-      url = "#{base_url}/listings/LISTING_ID/bids"
-      stub_request(:post, url).with(body: { bid: { amount: 0.1 }})
-
-      client.bid(listing_id: "LISTING_ID", amount: 0.1)
-
-      expect(a_request(:post, url)).to have_been_made
-    end
-
-    it 'can show comments for a listing' do
-      url = "#{base_url}/listings/LISTING_ID/comments"
-
-      stub_request(:get, url).to_return(mock_json_collection)
-
-      expect( client.listing_comments(listing_id: 'LISTING_ID') ).to eq(mock_collection)
-
-      expect(a_request(:get, url)).to have_been_made
-    end
-
-  end
-
   describe 'Investments' do
     it 'can display investments' do
       url = api_url "investments"
@@ -108,25 +52,6 @@ describe Bitbond::Client do
       expect(client.profile(profile_id: 'PROFILE_ID')).to eq(mock_item)
       expect(a_request(:get, url)).to have_been_made
     end
-
-
-    it 'can display loans associated with a profile' do
-      url = api_url "profiles/PROFILE_ID/loans"
-
-      stub_request(:get, url).to_return(mock_json_collection)
-
-      expect(client.profile_loans(profile_id: 'PROFILE_ID')).to eq(mock_collection)
-      expect(a_request(:get, url)).to have_been_made
-    end
-
-    it 'can display investments associated with a profile' do
-      url = api_url "profiles/PROFILE_ID/investments"
-
-      stub_request(:get, url).to_return(mock_json_collection)
-
-      expect(client.profile_investments(profile_id: 'PROFILE_ID')).to eq(mock_collection)
-      expect(a_request(:get, url)).to have_been_made
-    end
   end
 
 
@@ -155,8 +80,8 @@ describe Bitbond::Client do
 
   describe 'Loans' do
 
-    it 'can display information about your loans' do
-      url = api_url "loans"
+    it 'can display information about loans' do
+      url = api_url "loans?page=0"
 
       stub_request(:get, url).to_return(mock_json_collection)
 
@@ -167,10 +92,24 @@ describe Bitbond::Client do
     it 'can filter loans by status' do
       url = api_url "loans"
 
-      stub_request(:get, url).with(query: { status: ['funded'] } ).to_return(mock_json_collection)
+      stub_request(:get, url).with(query: { status: ['funded'], page: 0 } ).to_return(mock_json_collection)
 
       expect(client.loans(status: ['funded'])).to eq(mock_collection)
-      expect(a_request(:get, url).with(query: { status: ['funded']})).to have_been_made
+      expect(a_request(:get, url).with(query: { status: ['funded'], page: 0})).to have_been_made
+    end
+
+    it 'can search loans' do
+      stub_request(:get, "#{base_url}/loans?base_currency%5B%5D=usd&page=0&rating%5B%5D=A")
+        .to_return(mock_json_collection)
+
+      client.loans(base_currency: ['usd'], rating: ['A'])
+    end
+
+    it 'can search for term and accepts page arguments' do
+      stub_request(:get, "#{base_url}/loans?base_currency%5B%5D=btc&base_currency%5B%5D=usd&page=2&term%5B%5D=term_6_weeks")
+        .to_return(mock_json_collection)
+
+      client.loans(base_currency: ['usd', 'btc'], page: 2, term: ['term_6_weeks'])
     end
 
     it 'can show loan detais' do
@@ -180,6 +119,15 @@ describe Bitbond::Client do
 
       expect(client.loan(loan_id: 'LOAN_ID')).to eq(mock_item)
       expect(a_request(:get, url)).to have_been_made
+    end
+
+    it 'can bid on a loan' do
+      url = "#{base_url}/loans/LOAN_ID/bids"
+      stub_request(:post, url).with(body: { bid: { amount: 0.1 }})
+
+      client.bid(loan_id: "LOAN_ID", amount: 0.1)
+
+      expect(a_request(:post, url)).to have_been_made
     end
 
   end

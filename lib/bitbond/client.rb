@@ -13,26 +13,6 @@ module Bitbond
     end
 
 
-    def listings( base_currency: [], rating: [], term: [], page: 0)
-
-      get 'listings', { base_currency: Array(base_currency),
-                        rating: Array(rating),
-                        term: Array(term),
-                        page: page }
-    end
-
-    def listing(listing_id:)
-      get "listings/#{listing_id}"
-    end
-
-    def bid(listing_id:, amount:)
-      post "listings/#{listing_id}/bids", { bid: { amount: amount } }
-    end
-
-    def listing_comments(listing_id: )
-      get "listings/#{listing_id}/comments"
-    end
-
     def investments(base_currency: [])
       get "investments", { base_currency: Array(base_currency)}
     end
@@ -45,24 +25,27 @@ module Bitbond
       get "profiles/#{profile_id}"
     end
 
-    def profile_loans(profile_id:)
-      get "profiles/#{profile_id}/loans"
-    end
-
-    def profile_investments(profile_id:)
-      get "profiles/#{profile_id}/investments"
-    end
-
     def account(account_type: 'primary')
       get "accounts/#{account_type}"
     end
 
-    def loans(status: [])
-      get "loans", {status: Array(status) }
+    def loans(status: [], base_currency: [], rating: [], term: [], page: 0)
+      get "loans", {
+        status: Array(status),
+        base_currency: Array(base_currency),
+        rating: Array(rating),
+        term: Array(term),
+        page: page 
+      }
+
     end
 
     def loan(loan_id: )
       get "loans/#{loan_id}"
+    end
+
+    def bid(loan_id:, amount:)
+      post "loans/#{loan_id}/bids", { bid: { amount: amount } }
     end
 
     def webhooks
