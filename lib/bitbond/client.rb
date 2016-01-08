@@ -3,13 +3,15 @@ require 'oauth2'
 module Bitbond
   class Client
 
-    attr_accessor :app_id, :secret, :token, :base_url
+    attr_accessor :app_id, :secret, :token,  :base_url, :refresh_token, :expires_at
 
-    def initialize( app_id:, secret:, token:, base_url: "https://www.bitbond.com")
+    def initialize( app_id:, secret:, access_token:, refresh_token: nil, expires_at: nil, base_url: "https://www.bitbond.com")
       self.app_id = app_id
       self.secret = secret
-      self.token = token
+      self.token = access_token
       self.base_url = base_url
+      self.refresh_token = refresh_token
+      self.expires_at = expires_at
     end
 
 
@@ -35,9 +37,8 @@ module Bitbond
         base_currency: Array(base_currency),
         rating: Array(rating),
         term: Array(term),
-        page: page 
+        page: page
       }
-
     end
 
     def loan(loan_id: )
@@ -65,6 +66,7 @@ module Bitbond
       result.parsed
     end
 
+
     def post( endpoint, params = {})
       result = access_token.post( url(endpoint), { body: params.to_json, headers: {'Content-Type' => 'application/json'}})
       result.parsed
@@ -78,13 +80,16 @@ module Bitbond
       "#{self.base_url}/api/#{endpoint}"
     end
 
-
     def oauth_client
       @oauth_client ||= OAuth2::Client.new(app_id, secret, site: base_url)
     end
 
     def access_token
-      @access_token ||= OAuth2::AccessToken.new(oauth_client, token)
+      @access_token ||= OAuth2::AccessToken.new(oauth_client, token, refresh_token: refresh_token, expires_at: expires_at)
+    end
+
+    def refresh
+      access_token.refresh!
     end
 
   end

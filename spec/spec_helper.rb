@@ -17,7 +17,7 @@ def access_token
 end
 
 def bitbond_client
-  Bitbond::Client.new(app_id: app_id, secret: secret, token: access_token)
+  Bitbond::Client.new(app_id: app_id, secret: secret, access_token: access_token)
 end
 
 def base_url

@@ -163,4 +163,22 @@ describe Bitbond::Client do
   end
 
 
+  describe 'Refresh token' do
+    subject(:client) {
+      Bitbond::Client.new(app_id: app_id, secret: secret, access_token: access_token, **{ refresh_token: 'REFRESH' } )
+    }
+
+    it 'will be able to refresh the oauth token' do
+      stub_request(:post, "https://www.bitbond.com/oauth/token").
+        with(:body => {"client_id"=>"APP_ID", "client_secret"=>"SECRET", "grant_type"=>"refresh_token", "refresh_token"=>"REFRESH"}).
+         to_return(:status => 200, :body => '{"access_token": "NEW_TOKEN", "refresh_token": "NEW_REFRESH_TOKEN"}', headers: {'Content-Type'=>'application/json'})
+
+      new_token = client.refresh
+
+      expect(new_token.token).to eq("NEW_TOKEN")
+      expect(new_token.refresh_token).to eq("NEW_REFRESH_TOKEN")
+    end
+  end
+
+
 end
