@@ -20,14 +20,17 @@ module Bitbond
     end
 
     def investment(investment_id: )
+      require_param :investment_id, investment_id
       get "investments/#{investment_id}"
     end
 
     def profile(profile_id:)
+      require_param :profile_id, profile_id
       get "profiles/#{profile_id}"
     end
 
     def account(account_type: 'primary')
+      require_param :account_type, account_type
       get "accounts/#{account_type}"
     end
 
@@ -42,10 +45,13 @@ module Bitbond
     end
 
     def loan(loan_id: )
+      require_param :loan_id, loan_id
       get "loans/#{loan_id}"
     end
 
     def bid(loan_id:, amount:)
+      require_param :loan_id, loan_id
+      require_param :amount, amount
       post "loans/#{loan_id}/bids", { bid: { amount: amount } }
     end
 
@@ -54,10 +60,12 @@ module Bitbond
     end
 
     def create_webhook(callback_url: )
+      require_param :callback_url, callback_url
       post 'webhooks', { webhook: { callback_url: callback_url }}
     end
 
     def delete_webhook(webhook_id:)
+      require_param :webhook_id, webhook_id
       delete "webhooks/#{webhook_id}"
     end
 
@@ -90,6 +98,15 @@ module Bitbond
 
     def refresh
       access_token.refresh!
+    end
+
+    private
+
+    def require_param(symbol, val)
+      # this is taken from the implementation of rails: blank?
+      if val.respond_to?(:empty?) ? !!val.empty? : !val
+        raise ArgumentError, "Expected #{symbol} to be present, got: '#{val}'"
+      end
     end
 
   end

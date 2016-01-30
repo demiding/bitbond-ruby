@@ -40,6 +40,10 @@ describe Bitbond::Client do
 
       expect(a_request(:get, url)).to have_been_made
     end
+
+    it 'will raise an error if no id is provided' do
+      expect { client.investment(investment_id: nil) }.to raise_error ArgumentError
+    end
   end
 
 
