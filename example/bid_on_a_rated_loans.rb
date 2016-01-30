@@ -1,12 +1,14 @@
 require "pstore"
 require 'bitbond'
+require 'json'
 
 db = PStore.new('db.pstore')
 
-app_id = '0dd52a22cde94dc1ee59b3dc41223801948b6477d301f7312c2cdcc9844db83f'
-secret = 'fee79b9efb1e208348731708b3bbbdc1036d7c3f358a9e85695b4ef0a27cedcd'
+app_id = ''
+secret = ''
 callback = "urn:ietf:wg:oauth:2.0:oob"
 scope = 'api'
+base_url = 'http://www.bitbond.com'
 
 
 token = nil
@@ -16,9 +18,11 @@ db.transaction(true) do
   token_hash = db[:token]
 end
 
+
 create_client = ->(token_options = {}) {
-  opts = Hash[token_options.map { |k,v| [k.to_sym, v] } ].select {|k,v| [:access_token, :refresh_token, :expires_at].include?(k) }
-  Bitbond::Client.new(app_id: app_id, secret: secret, base_url: "http://www.bitbond.dev/", **opts)
+  opts = Hash[token_options.map { |k,v| [k.to_sym, v] } ]
+  opts = opts.select {|k,v| [:access_token, :refresh_token, :expires_at].include?(k) }
+  Bitbond::Client.new(app_id: app_id, secret: secret, base_url: base_url, **opts)
 }
 
 
@@ -33,13 +37,13 @@ if token_hash
 else
   client = create_client.call(access_token: nil)
 
-  puts "(Authorize url) Open url in your browser: \n"
+  puts "Authorize url: \n"
   puts client.oauth_client.auth_code.authorize_url(redirect_uri: callback, scope: scope)
 
-  puts "(Authorization token) Copy and paste the authorization token: \n"
+  puts "Input token: \n"
   authorization_token  = gets
   authorization_token  = authorization_token.delete("\n")
-  puts "Using authorization token: '#{authorization_token}'"
+  puts "Authorization token: '#{authorization_token}'"
 
   token = client.oauth_client.auth_code.get_token(authorization_token, redirect_uri: callback)
   db.transaction do
@@ -47,14 +51,31 @@ else
   end
 end
 
+prog = ->(c) {
+  loans = c.loans(status: 'in_funding', base_currency: 'usd', rating: 'A', term: 'term_6_weeks')['loans']
+  puts JSON.pretty_generate(loans)
+  puts "Matching loan size: #{loans.size}."
+  puts "Press y to bid on the loans, any other key to cancel"
+  answer = gets.strip
+  if answer == 'y'
+    loans.each do |l|
+      puts "Bidding on loan: #{l['code']}, amount is 0.1 BTC"
+      c.bid(loan_id: l['code'], amount: 0.1)
+    end
+  else
+    puts "Not doing anything.."
+  end
+}
+
 client = create_client.call(token.to_hash)
 puts "*****************"
 begin
-  puts client.loans
+  prog.call(client)
 rescue => e
-  puts "Got error when getting loans: #{e.response}"
+  puts "Got error when getting loans: #{e}"
 end
 puts "*****************"
 puts "\n\n"
 puts "The token is: #{token.to_hash}\n"
+
 
