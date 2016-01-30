@@ -27,7 +27,7 @@ create_client = ->(token_options = {}) {
 
 
 if token_hash
-  # token = OAuth2::AccessToken.from_hash(client, token_hash)
+  # We have a token already, refresh it and use
   puts token_hash
   client = create_client.call(token_hash)
   db.transaction do
@@ -35,6 +35,7 @@ if token_hash
     db[:token] = token.to_hash
   end
 else
+  # We need to generate a new token
   client = create_client.call(access_token: nil)
 
   puts "Authorize url: \n"
