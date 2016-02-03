@@ -18,11 +18,11 @@ Gem::Specification.new do |gem|
   gem.test_files    = gem.files.grep(%r{^(test|gem|features)/})
   gem.require_paths = ["lib"]
 
-  gem.add_runtime_dependency 'oauth2'
+  gem.add_runtime_dependency 'oauth2', '~> 1.0'
 
-  gem.add_development_dependency "rake"
-  gem.add_development_dependency "rspec"
-  gem.add_development_dependency "webmock"
-  gem.add_development_dependency "timecop"
-  gem.add_development_dependency "pry-byebug"
+
+  gem.add_development_dependency "rake", '~> 10.0'
+  gem.add_development_dependency "rspec", '~> 3.4'
+  gem.add_development_dependency "webmock", '~> 1.0'
+  gem.add_development_dependency "timecop", '~> 0.8'
 end
