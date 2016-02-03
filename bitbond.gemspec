@@ -10,7 +10,8 @@ Gem::Specification.new do |gem|
   gem.email         = ["api@bitbond.com"]
   gem.description   = "Client library for Bitbond API"
   gem.summary       = "Client library for Bitbond API"
-  gem.homepage      = "https://www.bitbond.com/api"
+  gem.licenses      = ['MIT']
+  gem.homepage      = "https://github.com/bitbond/bitbond-ruby"
 
   gem.files         = `git ls-files`.split($/)
   # gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
