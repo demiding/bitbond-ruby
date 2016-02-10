@@ -85,7 +85,7 @@ module Bitbond
     end
 
     def url(endpoint)
-      "#{self.base_url}/api/#{endpoint}"
+      "#{self.base_url}/api/v1/#{endpoint}"
     end
 
     def oauth_client

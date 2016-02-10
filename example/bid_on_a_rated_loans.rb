@@ -4,11 +4,11 @@ require 'json'
 
 db = PStore.new('db.pstore')
 
-app_id = ''
-secret = ''
+app_id = '424b82e11daf06d659813e875e4ed7d04b4e0ecf6d1f2c8c1451cbf348ee061b'
+secret = '4c5bab2c7bbc6410d01608d9d363f3f6eabaed8b9422230936d8cf4b8dd35464'
 callback = "urn:ietf:wg:oauth:2.0:oob"
 scope = 'api'
-base_url = 'http://www.bitbond.com'
+base_url = 'http://www.bitbond.dev'
 
 
 token = nil
@@ -53,6 +53,7 @@ else
 end
 
 prog = ->(c) {
+  puts JSON.pretty_generate(c.account(account_type: 'primary'))
   loans = c.loans(status: 'in_funding', base_currency: 'usd', rating: 'A', term: 'term_6_weeks')['loans']
   puts JSON.pretty_generate(loans)
   puts "Matching loan size: #{loans.size}."
@@ -61,7 +62,7 @@ prog = ->(c) {
   if answer == 'y'
     loans.each do |l|
       puts "Bidding on loan: #{l['code']}, amount is 0.1 BTC"
-      c.bid(loan_id: l['code'], amount: 0.1)
+      # c.bid(loan_id: l['code'], amount: 0.1)
     end
   else
     puts "Not doing anything.."

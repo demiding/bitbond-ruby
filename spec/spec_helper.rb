@@ -21,7 +21,7 @@ def bitbond_client
 end
 
 def base_url
-  "https://www.bitbond.com/api"
+  "https://www.bitbond.com/api/v1"
 end
 
 def mock_item
