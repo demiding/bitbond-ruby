@@ -2,3 +2,4 @@
 Gemfile.lock
 /vendor/bundle
 /example/vendor/bundle
+/example/db.pstore
