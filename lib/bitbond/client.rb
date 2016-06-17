@@ -1,15 +1,13 @@
 require 'oauth2'
+require "bitbond/configuration"
 
 module Bitbond
   class Client
 
-    attr_accessor :app_id, :secret, :token,  :base_url, :refresh_token, :expires_at
+    attr_accessor :token, :refresh_token, :expires_at
 
-    def initialize( app_id:, secret:, access_token:, refresh_token: nil, expires_at: nil, base_url: "https://www.bitbond.com")
-      self.app_id = app_id
-      self.secret = secret
+    def initialize(access_token:, refresh_token: nil, expires_at: nil)
       self.token = access_token
-      self.base_url = base_url
       self.refresh_token = refresh_token
       self.expires_at = expires_at
     end
@@ -85,11 +83,15 @@ module Bitbond
     end
 
     def url(endpoint)
-      "#{self.base_url}/api/v1/#{endpoint}"
+      [Bitbond.configuration.api_host, endpoint].join("/")
     end
 
     def oauth_client
-      @oauth_client ||= OAuth2::Client.new(app_id, secret, site: base_url)
+      @oauth_client ||= OAuth2::Client.new(
+        Bitbond.configuration.app_id,
+        Bitbond.configuration.secret_key,
+        site: Bitbond.configuration.api_host
+      )
     end
 
     def access_token
