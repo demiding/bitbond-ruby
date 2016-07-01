@@ -103,15 +103,18 @@ describe Bitbond::Client do
     end
 
     it 'can search loans' do
-      stub_request(:get, "#{base_url}/loans?base_currency%5B%5D=usd&page=0&rating%5B%5D=A")
-        .to_return(mock_json_collection)
+      stub_request(
+        :get, api_url("loans?base_currency%5B%5D=usd&page=0&rating%5B%5D=A")
+      ).to_return(mock_json_collection)
 
       client.loans(base_currency: ['usd'], rating: ['A'])
     end
 
     it 'can search for term and accepts page arguments' do
-      stub_request(:get, "#{base_url}/loans?base_currency%5B%5D=btc&base_currency%5B%5D=usd&page=2&term%5B%5D=term_6_weeks")
-        .to_return(mock_json_collection)
+      stub_request(
+        :get,
+        api_url("loans?base_currency%5B%5D=btc&base_currency%5B%5D=usd&page=2&term%5B%5D=term_6_weeks")
+      ).to_return(mock_json_collection)
 
       client.loans(base_currency: ['usd', 'btc'], page: 2, term: ['term_6_weeks'])
     end
@@ -126,7 +129,7 @@ describe Bitbond::Client do
     end
 
     it 'can bid on a loan' do
-      url = "#{base_url}/loans/LOAN_ID/bids"
+      url = api_url("loans/LOAN_ID/bids")
       stub_request(:post, url).with(body: { bid: { amount: 0.1 }})
 
       client.bid(loan_id: "LOAN_ID", amount: 0.1)
@@ -169,7 +172,9 @@ describe Bitbond::Client do
 
   describe 'Refresh token' do
     subject(:client) {
-      Bitbond::Client.new(app_id: app_id, secret: secret, access_token: access_token, **{ refresh_token: 'REFRESH' } )
+      Bitbond::Client.new(
+        access_token: access_token, **{ refresh_token: 'REFRESH' }
+      )
     }
 
     it 'will be able to refresh the oauth token' do

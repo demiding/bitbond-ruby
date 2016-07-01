@@ -4,12 +4,12 @@ Bundler.setup
 
 require 'bitbond'
 
-def app_id
-  'APP_ID'
-end
 
-def secret
-  'SECRET'
+RSpec.configure do |config|
+  config.before :suite do
+    Bitbond.configuration.app_id = "APP_ID"
+    Bitbond.configuration.secret_key = "SECRET"
+  end
 end
 
 def access_token
@@ -17,11 +17,7 @@ def access_token
 end
 
 def bitbond_client
-  Bitbond::Client.new(app_id: app_id, secret: secret, access_token: access_token)
-end
-
-def base_url
-  "https://www.bitbond.com/api/v1"
+  Bitbond::Client.new(access_token: access_token)
 end
 
 def mock_item
@@ -33,7 +29,7 @@ def mock_collection
 end
 
 def api_url(endpoint)
-  "#{base_url}/#{endpoint}"
+  [Bitbond.configuration.api_host, endpoint].join("/")
 end
 
 def mock_json_collection
@@ -63,4 +59,7 @@ def test_get_collection(client, endpoint, method = endpoint)
   expect(a_request(:get, url)).to have_been_made
 end
 
-
+def restore_default_config
+  Bitbond.configuration = nil
+  Bitbond.configure {}
+end
