@@ -4,12 +4,14 @@ require 'json'
 
 db = PStore.new('db.pstore')
 
-app_id = '424b82e11daf06d659813e875e4ed7d04b4e0ecf6d1f2c8c1451cbf348ee061b'
-secret = '4c5bab2c7bbc6410d01608d9d363f3f6eabaed8b9422230936d8cf4b8dd35464'
+Bitbond.configure do |config|
+  config.api_host   = 'http://www.bitbond.dev/api/v1'
+  config.app_id     = '4ee9e10df5ccc51b8fa3548db3f0138389ee33037725997679eff2c15d6c7515'
+  config.secret_key = 'bcfd2d07071a43d22a364febd17dacc238da83ed2980b34e211d2161ffe41dc4'
+end
+
 callback = "urn:ietf:wg:oauth:2.0:oob"
 scope = 'api'
-base_url = 'http://www.bitbond.dev'
-
 
 token = nil
 token_hash = nil
@@ -18,11 +20,10 @@ db.transaction(true) do
   token_hash = db[:token]
 end
 
-
 create_client = ->(token_options = {}) {
   opts = Hash[token_options.map { |k,v| [k.to_sym, v] } ]
   opts = opts.select {|k,v| [:access_token, :refresh_token, :expires_at].include?(k) }
-  Bitbond::Client.new(app_id: app_id, secret: secret, base_url: base_url, **opts)
+  Bitbond::Client.new(**opts)
 }
 
 
