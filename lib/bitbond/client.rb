@@ -13,8 +13,13 @@ module Bitbond
     end
 
 
-    def investments(base_currency: [])
-      get "investments", { base_currency: Array(base_currency)}
+    def investments(base_currency: [], rating: [], term: [], status: [])
+      get "investments", {
+        status: Array(status),
+        base_currency: Array(base_currency),
+        rating: Array(rating),
+        term: Array(term)
+      }
     end
 
     def investment(investment_id: )

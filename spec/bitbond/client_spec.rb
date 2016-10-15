@@ -31,6 +31,16 @@ describe Bitbond::Client do
       expect(a_request(:get, url).with(query: {base_currency: ['usd']} )).to have_been_made
     end
 
+    it 'can filter by rating' do
+      url = api_url "investments"
+
+      stub_request(:get, url).with(query: {rating: ['A']}).to_return(mock_json_collection)
+
+      expect( client.investments(rating: ['A']) ).to eq(mock_collection)
+
+      expect(a_request(:get, url).with(query: {rating: ['A']} )).to have_been_made
+    end
+
     it 'can display investment details' do
       url = api_url "investments/INVESTMENT_ID"
 
