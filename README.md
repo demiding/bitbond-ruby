@@ -3,7 +3,7 @@
 Bitbond API client in Ruby
 
 To install run:
-`bundle install bitbond`
+`gem install bitbond`
 
 The documentation is available at:
 https://www.bitbond.com/api/docs
